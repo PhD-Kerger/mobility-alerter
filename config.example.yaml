@@ -1,0 +1,18 @@
+alerting:
+  alerters:
+    - Discord:
+        name: "DiscordAlerter"
+        config_str: "discord://"
+  log_collector:
+    - GBFS:
+        name: "GBFS"
+        class: "GBFS"
+        log_file: "logs/gbfs_collector/log"
+    - GTFS:
+        name: "GTFS"
+        class: "GTFS"
+        log_file: "logs/gtfs_collector/log"
+    - Nextbike:
+        name: "Nextbike"
+        class: "Nextbike"
+        log_file: "logs/nextbike_collector/log."

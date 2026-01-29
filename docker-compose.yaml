@@ -1,0 +1,11 @@
+services:
+  mobility-alerter:
+    image: mobility-alerter:1.0
+    volumes:
+      - /root/mobility-alerter/env.yaml:/app/env.yaml:ro
+      # Add all the logs referenced in the env.yaml here
+      - /root/gbfs-collector/log:/app/logs/gbfs-collector/log:ro
+      - /root/gtfs-collector/log:/app/logs/gtfs-collector/log:ro
+      - /root/nextbike-collector/log:/app/logs/nextbike-collector/log:ro
+    restart: unless-stopped
+  
