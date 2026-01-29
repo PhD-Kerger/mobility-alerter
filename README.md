@@ -52,37 +52,23 @@ The alerter can monitor any mobility data collection system that produces struct
 
    ```yaml
    alerting:
-     slack:
-       enabled: true
-       token: "xoxb-your-slack-bot-token"
-       daily_summary_time: "12:00"
-       channels:
-         daily: "#daily-tracker"     # Channel for daily summaries
-         alerts: "#alerts"           # Channel for error alerts
-     
-     smtp:
-       enabled: false
-       daily_summary_time: "12:00"
-       server: "smtp.gmail.com"
-       port: 587
-       username: "your-email@gmail.com"
-       password: "your-app-password"
-       from_email: "your-email@gmail.com"
-       to_email: "admin@yourcompany.com"
-     
+     alerters:
+       - Discord:
+           name: "DiscordAlerter"
+           config_str: "discord://"
      log_collector:
        - GBFS:
-           name: "GBFS Collector"
+           name: "GBFS"
            class: "GBFS"
            log_file: "logs/gbfs_collector/log"
        - GTFS:
-           name: "GTFS Collector"  
+           name: "GTFS"
            class: "GTFS"
            log_file: "logs/gtfs_collector/log"
        - Nextbike:
-           name: "Nextbike Collector"
+           name: "Nextbike"
            class: "Nextbike"
-           log_file: "logs/nextbike_collector/log"
+           log_file: "logs/nextbike_collector/log."
    ```
 
 ### Running with Docker
