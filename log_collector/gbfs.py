@@ -64,6 +64,7 @@ class GBFSLogCollector:
 
         message = ""
         daily_metrics = self._get_daily_metrics()
+
         for operator, feeds in daily_metrics.items():
             operator_name = operator.replace("_", " ")
             main_metrics = feeds.get("main", {})
@@ -109,18 +110,12 @@ class GBFSLogCollector:
         with open(self.log_file_path + "/" + date + ".txt", "r") as log_file:
             metrics = {}
             for line in log_file:
+                if "Compacting" in line or "Samba" in line or "Scraping Cron" in line or "Scraper" in line:
+                    continue
                 if date in line:
                     # get the operator name between []
                     try:
                         operator_name = line.split("[")[1].split("]")[0]
-                        # Skip non-operator lines
-                        if operator_name in [
-                            "Scraper",
-                            "Compactor",
-                            "Samba Move",
-                            "Scraping Cron",
-                        ]:
-                            continue
                     except IndexError:
                         continue
                     if operator_name not in metrics:

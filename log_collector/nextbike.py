@@ -86,19 +86,13 @@ class NextbikeLogCollector:
         with open(self.log_file_path + "/" + date + ".txt", "r") as log_file:
             metrics = {}
             for line in log_file:
+                if "Compacting" in line or "Samba" in line or "Scraping Cron" in line or "Scraper" in line:
+                    continue
                 if date in line:
                     # 2025-10-31T10:15:00.11534971Z INFO msg=Starting scraping job
                     # target=Germany url=https://maps.nextbike.net/maps/nextbike-live.json?countries=DE
                     try:
                         operator_name = line.split("[")[1].split("]")[0]
-                        # Skip non-operator lines
-                        if operator_name in [
-                            "Scraper",
-                            "Compactor",
-                            "Samba Move",
-                            "Scraping Cron",
-                        ]:
-                            continue
                     except IndexError:
                         continue
                     if operator_name not in metrics:
