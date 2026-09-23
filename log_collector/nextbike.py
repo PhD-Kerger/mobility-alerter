@@ -33,6 +33,9 @@ class NextbikeLogCollector:
         -------------------|-------|------|-------
         Germany            | 1     | 1    | 0
         Global             | 0     | 0    | 0
+
+        <OPTIONAL IF AN OPERATOR HAS NO SAVES>
+        ⚠️ WARNING: The following operators had no saves yesterday: [Operator1, Operator2, ...]
         """
         title = f"[{site_name} - Daily Summary {self.name} - {(datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')}]"
 
@@ -60,6 +63,12 @@ class NextbikeLogCollector:
                 f"{errors:>{error_width}}\n"
             )
 
+        no_saves_operators = [
+            op for op, m in daily_metrics.items() if m.get("Save", 0) == 0
+        ]
+        if no_saves_operators:
+            message += f"\n⚠️ WARNING: The following operators had no saves yesterday: {', '.join(no_saves_operators)}\n"
+
         final_message = f"```\n{header}\n{message}```"
 
         return final_message, title
@@ -86,7 +95,12 @@ class NextbikeLogCollector:
         with open(self.log_file_path + "/" + date + ".txt", "r") as log_file:
             metrics = {}
             for line in log_file:
-                if "Compacting" in line or "Samba" in line or "Scraping Cron" in line or "Scraper" in line:
+                if (
+                    "Compacting" in line
+                    or "Samba" in line
+                    or "Scraping Cron" in line
+                    or "Scraper" in line
+                ):
                     continue
                 if date in line:
                     # 2025-10-31T10:15:00.11534971Z INFO msg=Starting scraping job

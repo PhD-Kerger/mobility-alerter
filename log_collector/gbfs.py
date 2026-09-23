@@ -47,16 +47,19 @@ class GBFSLogCollector:
         RegioRadStuttgart  | 494    | 950    | 2      | 2
         Voi                | 1414   | 30     | 2      | 2
 
+        <OPTIONAL IF AN OPERATOR HAS NO SAVES>
+        ⚠️ WARNING: The following operators had no saves yesterday: [Operator1, Operator2, ...]
+
         """
         title = f"[{site_name} - Daily Summary {self.name} - {(datetime.datetime.now() - datetime.timedelta(days=1)).strftime('%Y-%m-%d')}]"
-        
+
         # Fixed column widths for perfect alignment
         provider_width = 18
         saves_width = 4
         skips_width = 4
         errors_width = 5
         others_width = 5
-        
+
         header = (
             f"{'Data Provider':<{provider_width}} | {'Save':>{saves_width}} | {'Skip':>{skips_width}} | {'Error':>{errors_width}} | {'Other':<{others_width}}\n"
             f"{'-' * provider_width} | {'-' * saves_width} | {'-' * skips_width} | {'-' * errors_width} | {'-' * others_width}"
@@ -76,7 +79,19 @@ class GBFSLogCollector:
                 f"{main_metrics.get('Errors', 0):>{errors_width}} | "
                 f"{other_metrics.get('Saves', 0)}/{other_metrics.get('Skips', 0)}/{other_metrics.get('Errors', 0)}\n"
             )
-            
+
+        no_saves_operators = [
+            operator
+            for operator, feeds in daily_metrics.items()
+            if feeds.get("main", {}).get("Saves", 0) == 0
+        ]
+
+        if no_saves_operators:
+            message += (
+                "\n⚠️ WARNING: The following operators had no saves yesterday: "
+                f"{', '.join(no_saves_operators)}\n"
+            )
+
         final_message = f"```\n{header}\n{message}```"
 
         return final_message, title
@@ -110,7 +125,12 @@ class GBFSLogCollector:
         with open(self.log_file_path + "/" + date + ".txt", "r") as log_file:
             metrics = {}
             for line in log_file:
-                if "Compacting" in line or "Samba" in line or "Scraping Cron" in line or "Scraper" in line:
+                if (
+                    "Compacting" in line
+                    or "Samba" in line
+                    or "Scraping Cron" in line
+                    or "Scraper" in line
+                ):
                     continue
                 if date in line:
                     # get the operator name between []
